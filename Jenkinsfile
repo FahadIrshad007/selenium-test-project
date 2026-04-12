@@ -16,14 +16,14 @@ pipeline {
         stage('Clean Environment') {
             steps {
                 // Ensure no old containers are running
-                sh "docker compose -f ${DOCKER_COMPOSE_FILE} down"
+                sh "docker-compose -f ${DOCKER_COMPOSE_FILE} down"
             }
         }
 
         stage('Build and Run') {
             steps {
                 // Build (if needed, though we use volumes) and start containers
-                sh "docker compose -f ${DOCKER_COMPOSE_FILE} up -d"
+                sh "docker-compose -f ${DOCKER_COMPOSE_FILE} up -d"
             }
         }
 
