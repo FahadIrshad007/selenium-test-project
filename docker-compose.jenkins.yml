@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  mongodb-jenkins:
+    image: mongo:latest
+    container_name: mongodb-jenkins
+    ports:
+      - "27018:27017" # Different port from Part I
+    volumes:
+      - mongo-data-jenkins:/data/db
+
+  backend-jenkins:
+    image: node:18
+    container_name: food-delivery-backend-jenkins
+    working_dir: /app
+    ports:
+      - "4001:4000" # Different port from Part I
+    volumes:
+      - ./backend:/app
+    environment:
+      - MONGO_URL=mongodb://mongodb-jenkins:27017/food-delivery
+      - JWT_SECRET=your_jwt_secret_here
+      - SALT=10
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - mongodb-jenkins
+
+  frontend-jenkins:
+    image: node:18
+    container_name: food-delivery-frontend-jenkins
+    working_dir: /app
+    ports:
+      - "3001:5173" # Different port, using Vite dev server port
+    volumes:
+      - ./frontend:/app
+    environment:
+      - VITE_BACKEND_URL=http://13.62.52.241:4001
+    command: sh -c "npm install && npm run dev -- --host"
+    depends_on:
+      - backend-jenkins
+
+  admin-jenkins:
+    image: node:18
+    container_name: food-delivery-admin-jenkins
+    working_dir: /app
+    ports:
+      - "5175:5173" # Different port
+    volumes:
+      - ./admin:/app
+    environment:
+      - VITE_BACKEND_URL=http://13.62.52.241:4001
+    command: sh -c "npm install && npm run dev -- --host"
+    depends_on:
+      - backend-jenkins
+
+volumes:
+  mongo-data-jenkins:

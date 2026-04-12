@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: fahadirshad/food-delivery-backend:v1
+    container_name: food-delivery-backend
+    ports:
+      - "4000:4000"
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/food-delivery
+      - JWT_SECRET=your_jwt_secret_here
+      - SALT=your_salt_value_here
+      - STRIPE_SECRET_KEY=your_stripe_key_here
+    depends_on:
+      - mongodb
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_BACKEND_URL=http://13.62.52.241:4000
+    image: fahadirshad/food-delivery-frontend:v1
+    container_name: food-delivery-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+      args:
+        - VITE_BACKEND_URL=http://13.62.52.241:4000
+    image: fahadirshad/food-delivery-admin:v1
+    container_name: food-delivery-admin
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
