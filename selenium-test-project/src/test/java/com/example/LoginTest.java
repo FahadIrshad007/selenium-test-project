@@ -32,25 +32,36 @@ public class LoginTest {
         WebDriver driver = new ChromeDriver(options);
         
         try {
+            System.out.println("Navigating to: http://103.139.122.250:4000/");
             driver.navigate().to("http://103.139.122.250:4000/"); 
             
-            // Wait for elements if necessary
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            // Wait for elements (up to 20 seconds) - sometimes pages take time in Docker
+            driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 
+            System.out.println("Current URL: " + driver.getCurrentUrl());
+            System.out.println("Page Title: " + driver.getTitle());
+
+            // Try to find email field
             driver.findElement(By.name("email")).sendKeys("qasim@malik.com");
             driver.findElement(By.name("password")).sendKeys("abcdefg");
             
-            // The provided snippet used id="m_login_signin_submit"
+            // Login button
             driver.findElement(By.id("m_login_signin_submit")).click();
 
-            driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+            // Wait for error message (up to 10 seconds)
+            Thread.sleep(3000); // Give it a moment to process the click
             
-            // XPath provided in the prompt
             String errorText = driver.findElement(By.xpath("/html/body/div/div/div[1]/div/div/div/div[2]/form/div[1]")).getText();
+            System.out.println("Found Error Text: " + errorText);
             
             assert(errorText.contains("Incorrect email or password"));
-            System.out.println("Test Passed: Error message found as expected.");
+            System.out.println("Test Status: PASSED");
             
+        } catch (Exception e) {
+            System.out.println("Test Failed with Exception: " + e.getMessage());
+            // Print page source to help find the right elements if it fails
+            // System.out.println("Page Source Snippet: " + driver.getPageSource().substring(0, Math.min(driver.getPageSource().length(), 1000)));
+            throw e; 
         } finally {
             driver.quit();
         }
