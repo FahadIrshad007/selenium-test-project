@@ -78,9 +78,12 @@ Detailed Results:
 ${details} 
 """ 
                        emailext( 
-                           to: committer, 
                            subject: "Build #${env.BUILD_NUMBER} Test Results", 
-                           body: emailBody 
+                           body: emailBody,
+                           recipientProviders: [
+                               [$class: 'RequesterRecipientProvider'],
+                               [$class: 'CulpritsRecipientProvider']
+                           ]
                        ) 
                    } else {
                        println "No test reports found in expected directory."
