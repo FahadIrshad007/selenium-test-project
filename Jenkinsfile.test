@@ -7,16 +7,9 @@ pipeline {
     } 
 
     stages { 
-        stage('Clone Repository') { 
-            steps { 
-                // Note: Replace with your actual repository URL
-                git branch: 'main', url: 'https://github.com/YOUR_GITHUB_USERNAME/selenium-test-project.git' 
-            } 
-        } 
-
         stage('Test') { 
             steps { 
-                // Navigate to the project directory if it's in a subdirectory
+                // Jenkins already cloned the repo, so we just run the test
                 sh 'mvn -f selenium-test-project/pom.xml test' 
             } 
         } 
