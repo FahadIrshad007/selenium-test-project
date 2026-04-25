@@ -23,9 +23,11 @@ public class LoginTest {
         }
 
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");               // Run in headless mode
-        options.addArguments("--no-sandbox");             // Required in some Docker environments
-        options.addArguments("--disable-dev-shm-usage");  // Required in some Docker environments
+        options.addArguments("--headless=new");           // Use the newer headless mode
+        options.addArguments("--no-sandbox");             // Required for Docker
+        options.addArguments("--disable-dev-shm-usage");  // Prevents memory issues in Docker
+        options.addArguments("--remote-allow-origins=*"); // FIXES: ConnectionFailedException
+        options.addArguments("--disable-gpu");            // Recommended for headless
 
         WebDriver driver = new ChromeDriver(options);
         
